@@ -1,4 +1,4 @@
-<ng-template *ngTemplateOutlet="tab"></ng-template>
-<ng-content *ngIf="selectedTab">
-  <ng-content #tab></ng-content>
-</ng-content>
+<ng-container *ngTemplateOutlet="tab"></ng-container>
+<ng-template *ngIf="selectedTab">
+  <ng-container #tab></ng-container>
+</ng-template>
