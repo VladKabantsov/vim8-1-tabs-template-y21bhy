@@ -8,8 +8,8 @@
 <br>
 
 <tabs>
-  <tab *ngFor="let tab of tabs" [selectedTab]="true">
-    <tab-title>
+  <tab *ngFor="let tab of tabs" [selectedTab]="tab === selectedTab">
+    <tab-title class="tabs__title">
       Tab <b>{{ tab }}</b> title
     </tab-title>
     <tab-content>

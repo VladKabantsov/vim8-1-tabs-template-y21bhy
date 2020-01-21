@@ -1,4 +1,2 @@
-<ng-container *ngTemplateOutlet="tab"></ng-container>
-<ng-template *ngIf="selectedTab">
-  <ng-container #tab></ng-container>
-</ng-template>
+<ng-content select="tab-title"></ng-content>
+<ng-content select="tab-content" *ngIf="selectedTab"></ng-content>
