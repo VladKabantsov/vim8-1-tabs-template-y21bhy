@@ -1,1 +1,4 @@
-<ng-content *ngIf="showContent"></ng-content>
+<ng-template *ngTemplateOutlet="tab"></ng-template>
+<ng-content *ngIf="selectedTab">
+  <ng-content #tab></ng-content>
+</ng-content>

@@ -1,4 +1,4 @@
-import { AfterViewChecked, AfterContentInit, Component, ViewChild, ViewChildren, AfterViewInit, QueryList, Renderer2, ElementRef } from '@angular/core';
+import { AfterViewChecked, Component, ViewChild, ViewChildren, AfterViewInit, QueryList, Renderer2, ElementRef } from '@angular/core';
 import { TabComponent } from './tabs/tab/tab.component';
 import { TabsComponent } from './tabs/tabs/tabs.component';
 
@@ -7,7 +7,7 @@ import { TabsComponent } from './tabs/tabs/tabs.component';
   templateUrl: './app.component.html',
   styleUrls: [ './app.component.css' ]
 })
-export class AppComponent implements AfterViewInit, AfterViewChecked, AfterContentInit {
+export class AppComponent implements AfterViewInit, AfterViewChecked {
   @ViewChild(TabsComponent, { static: false, read: ElementRef }) tabsElement: ElementRef;
   @ViewChildren(TabComponent) tabComponents: QueryList<TabComponent>;
   @ViewChildren(TabComponent, { read: ElementRef }) tabElements: QueryList<ElementRef>;
@@ -16,7 +16,6 @@ export class AppComponent implements AfterViewInit, AfterViewChecked, AfterConte
   constructor(private renderer: Renderer2) {}
 
   ngAfterViewInit() {
-    console.log('tabComponents', this.tabComponents)
     this.renderer
       .addClass(this.tabElements.first.nativeElement, 'tabs__title--active');
     this.renderer
@@ -28,21 +27,11 @@ export class AppComponent implements AfterViewInit, AfterViewChecked, AfterConte
     const last: ElementRef = this.tabElements.last;
   }
 
-  ngAfterContentInit() {
-    console.log(this.tabComponents)
-    this.tabComponents.forEach(this.initalizeTabContent);
-  }
-
   public dec() {
     this.tabs = this.tabs.slice(0, -1);
   }
 
   public inc() {
     this.tabs = [ ...this.tabs, (this.tabs.length + 1) ];
-    this.initalizeTabContent();
-  }
-
-  private initalizeTabContent(component: TabComponent = this.tabComponents.last): void {
-    component.showContent = true;
   }
 }

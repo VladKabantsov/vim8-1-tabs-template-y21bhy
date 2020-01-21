@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild, Input } from '@angular/core';
 
 @Component({
   selector: 'tab',
@@ -6,7 +6,7 @@ import { Component } from '@angular/core';
   styleUrls: ['./tab.component.css']
 })
 export class TabComponent {
-
-  public showContent: boolean = false;
+  @ViewChild('tab', { static: true, read: ElementRef }) tab;
+  @Input() selectedTab: boolean;
   constructor() { }
 }
