@@ -5,6 +5,7 @@ import { filter, map, tap, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
 const ACTIVE_CLASS = 'tabs__title--active';
+const FIRST_TAB = 1;
 @Component({
   selector: 'my-app',
   templateUrl: './app.component.html',
@@ -36,7 +37,6 @@ export class AppComponent implements AfterViewInit, OnDestroy {
     this.renderer
       .addClass(this.tabsElement.nativeElement, 'tabs__titles');
     this.tabElements.changes.pipe(
-      tap((c) => console.log(c.length)),
       filter((changes: QueryList<ElementRef>) => {
         const selectedTabWasRemoved: boolean = (changes.length < this.selectedTab);
         const tabsArrayIsNotEmpty: boolean = !!changes.length;
@@ -46,7 +46,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
       }),
       map((changes: QueryList<ElementRef>) => changes.first && changes.first.nativeElement),
       takeUntil(this.ngOnDestroy$),
-    ).subscribe((tab: HTMLElement) => this.changeSelectedTab(tab, 1));
+    ).subscribe((tab: HTMLElement) => this.changeSelectedTab(tab, FIRST_TAB));
   }
 
   ngOnDestroy() {
