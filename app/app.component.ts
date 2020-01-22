@@ -40,8 +40,9 @@ export class AppComponent implements AfterViewInit, OnDestroy {
       filter((changes: QueryList<ElementRef>) => {
         const selectedTabWasRemoved: boolean = (changes.length < this.selectedTab);
         const tabsArrayIsNotEmpty: boolean = !!changes.length;
+        const singleTab: boolean = changes.length === 1;
 
-        return selectedTabWasRemoved && tabsArrayIsNotEmpty;
+        return (selectedTabWasRemoved && tabsArrayIsNotEmpty) || singleTab;
       }),
       map((changes: QueryList<ElementRef>) => changes.first && changes.first.nativeElement),
       takeUntil(this.ngOnDestroy$),
