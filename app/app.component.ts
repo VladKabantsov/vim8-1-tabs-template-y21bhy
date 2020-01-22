@@ -1,7 +1,8 @@
-import { AfterViewChecked, Component, ViewChild, ViewChildren, AfterViewInit, QueryList, Renderer2, ElementRef, HostListener } from '@angular/core';
+import { AfterViewChecked, Component, ViewChild, ViewChildren, AfterViewInit, QueryList, Renderer2, ElementRef, HostListener, OnDestroy } from '@angular/core';
 import { TabComponent } from './tabs/tab/tab.component';
 import { TabsComponent } from './tabs/tabs/tabs.component';
-import { filter, map } from 'rxjs/operators';
+import { filter, map, tap, takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 const ACTIVE_CLASS = 'tabs__title--active';
 @Component({
@@ -9,7 +10,7 @@ const ACTIVE_CLASS = 'tabs__title--active';
   templateUrl: './app.component.html',
   styleUrls: [ './app.component.css' ]
 })
-export class AppComponent implements AfterViewInit, AfterViewChecked {
+export class AppComponent implements AfterViewInit, OnDestroy {
   @ViewChild(TabsComponent, { static: false, read: ElementRef }) tabsElement: ElementRef;
   @ViewChildren(TabComponent, { read: ElementRef }) tabElements: QueryList<ElementRef>;
 
@@ -24,6 +25,7 @@ export class AppComponent implements AfterViewInit, AfterViewChecked {
   public selectedTab: number = 1;
   
   private selecteTabElement: HTMLElement;
+  private ngOnDestroy$: Subject<void> = new Subject<void>();
 
   constructor(private renderer: Renderer2) {}
 
@@ -34,14 +36,21 @@ export class AppComponent implements AfterViewInit, AfterViewChecked {
     this.renderer
       .addClass(this.tabsElement.nativeElement, 'tabs__titles');
     this.tabElements.changes.pipe(
-      filter((changes: QueryList<ElementRef>) => changes.length < this.selectedTab),
-      map((changes: QueryList<ElementRef>) => changes.first),
+      tap((c) => console.log(c.length)),
+      filter((changes: QueryList<ElementRef>) => {
+        const selectedTabWasRemoved: boolean = (changes.length < this.selectedTab);
+        const tabsArrayIsNotEmpty: boolean = !!changes.length;
+
+        return selectedTabWasRemoved && tabsArrayIsNotEmpty;
+      }),
+      map((changes: QueryList<ElementRef>) => changes.first && changes.first.nativeElement),
+      takeUntil(this.ngOnDestroy$),
     ).subscribe((tab: HTMLElement) => this.changeSelectedTab(tab, 1));
   }
 
-  ngAfterViewChecked() {
-    // const first: ElementRef = this.tabElements.first;
-    // const last: ElementRef = this.tabElements.last;
+  ngOnDestroy() {
+    this.ngOnDestroy$.next();
+    this.ngOnDestroy$.complete();
   }
 
   public dec() {
@@ -54,8 +63,9 @@ export class AppComponent implements AfterViewInit, AfterViewChecked {
 
   private changeSelectedTab(tabElement: HTMLElement, numOfTab: number): void {
     this.renderer.removeClass(this.selecteTabElement, ACTIVE_CLASS);
+    this.selectedTab = numOfTab;
     this.renderer.addClass(tabElement, ACTIVE_CLASS);
     this.selecteTabElement = tabElement;
-    this.selectedTab = numOfTab;
+    
   }
 }
